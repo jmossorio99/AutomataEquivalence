@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import exception.NoInitialStateException;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -89,11 +90,29 @@ public class MainWindowController implements Initializable {
 				states.add("q" + i);
 			}
 			if (!selectedType.equals(MOORE)) {
-				program.initializeMealy1(m1Transitions, inputs, states);
-				program.initializeMealy2(m2Transitions, inputs, states);
+				try {
+					program.initializeMealy1(m1Transitions, inputs, states);
+					program.initializeMealy2(m2Transitions, inputs, states);
+				} catch (final NoInitialStateException e) {
+					e.printStackTrace();
+					final Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setContentText(e.getMsg());
+					alert.show();
+					return;
+				}
 			} else {
-				program.initializeMoore1(m1Transitions, inputs, states, outputsMooreM1);
-				program.initializeMoore2(m2Transitions, inputs, states, outputsMooreM2);
+				try {
+					program.initializeMoore1(m1Transitions, inputs, states, outputsMooreM1);
+					program.initializeMoore2(m2Transitions, inputs, states, outputsMooreM2);
+				} catch (final NoInitialStateException e) {
+					e.printStackTrace();
+					final Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setContentText(e.getMsg());
+					alert.show();
+					return;
+				}
 			}
 		}
 	};
@@ -107,6 +126,7 @@ public class MainWindowController implements Initializable {
 	private Program program;
 	private int rowNum;
 	private String selectedType = "";
+
 	private final String[] types = { "Mealy", "Moore" };
 
 	@FXML
