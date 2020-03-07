@@ -19,11 +19,23 @@ public class Program {
 		}
 	}
 
-	public void initializeM1(final ArrayList<String> transitions, final ArrayList<String> inputs) {
+	public void initializeMealy1(final ArrayList<String> transitions, final ArrayList<String> inputs,
+			final ArrayList<String> states) {
 
 	}
 
-	public void initializeM2(final ArrayList<String> transitions, final ArrayList<String> inputs) {
+	public void initializeMealy2(final ArrayList<String> transitions, final ArrayList<String> inputs,
+			final ArrayList<String> states) {
+
+	}
+
+	public void initializeMoore1(final ArrayList<String> transitions, final ArrayList<String> inputs,
+			final ArrayList<String> states, final ArrayList<String> outputs) {
+
+	}
+
+	public void initializeMoore2(final ArrayList<String> transitions, final ArrayList<String> inputs,
+			final ArrayList<String> states, final ArrayList<String> outputs) {
 
 	}
 
