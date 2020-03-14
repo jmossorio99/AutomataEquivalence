@@ -1,13 +1,12 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MealyMachine {
 
-	private final MealyState initialState;
-	private final ArrayList<String> inputs;
-	private final ArrayList<MealyState> states;
+	protected final MealyState initialState;
+	protected final ArrayList<String> inputs;
+	protected ArrayList<MealyState> states;
 
 	public MealyMachine(final ArrayList<MealyState> states, final MealyState initialState,
 			final ArrayList<String> inputs) {
@@ -21,28 +20,27 @@ public class MealyMachine {
 			return;
 		}
 		boolean done = false;
-		final ArrayList<MealyState> R = new ArrayList<>(Arrays.asList(initialState));
+		final ArrayList<MealyState> R = new ArrayList<>();
+		R.add(initialState);
 		while (!done) {
 			boolean addedOne = false;
 			final ArrayList<MealyState> M = new ArrayList<>();
 			for (final MealyState state : R) {
 				for (final MealyState transition : state.getTransitions()) {
-					if (!R.contains(transition)) {
-						M.add(transition);
-						addedOne = true;
-					}
+					M.add(transition);
 				}
 			}
-			R.addAll(M);
+			for (final MealyState mealyState : M) {
+				if (!R.contains(mealyState)) {
+					R.add(mealyState);
+					addedOne = true;
+				}
+			}
 			if (!addedOne) {
 				done = true;
 			}
 		}
-		for (final MealyState state : states) {
-			if (!R.contains(state)) {
-				states.remove(state);
-			}
-		}
+		states = R;
 
 	}
 
@@ -58,13 +56,21 @@ public class MealyMachine {
 		return inputs;
 	}
 
-	private MealyState getState(final String stateName) {
+	protected MealyState getState(final String stateName) {
 		for (final MealyState state : states) {
 			if (state.getName().equals(stateName)) {
 				return state;
 			}
 		}
 		return null;
+	}
+
+	public String getStateOutputs(final MealyState q) {
+		String outputs = "";
+		for (final String element : q.getOutputs()) {
+			outputs += element;
+		}
+		return outputs;
 	}
 
 	public ArrayList<MealyState> getStates() {

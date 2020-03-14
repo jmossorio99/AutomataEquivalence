@@ -8,6 +8,8 @@ import exception.NoInitialStateException;
 
 public class Program {
 
+	public final static String M1_SIGNATURE = "M1";
+	public final static String M2_SIGNATURE = "M2";
 	private MealyMachine mealyMachine1;
 	private MealyMachine mealyMachine2;
 	private SumMealyMachine sumMealyMachine;
@@ -25,15 +27,21 @@ public class Program {
 		mealyMachine1.deleteUnreachableStates();
 		mealyMachine2.deleteUnreachableStates();
 		final ArrayList<MealyState> sumStates = mealyMachine1.getStates();
+		final MealyState initialM1 = mealyMachine1.getInitialState();
+		final MealyState initialM2 = mealyMachine2.getInitialState();
 		sumStates.addAll(mealyMachine2.getStates());
-		sumMealyMachine = new SumMealyMachine(sumStates, null, mealyMachine1.getInputs());
+		sumMealyMachine = new SumMealyMachine(sumStates, null, mealyMachine1.getInputs(), initialM1, initialM2);
 
 	}
 
-	public String findEquivalence() {
+	public boolean findEquivalenceMealy() {
 		calculateSumMealyMachine();
-		final String output = sumMealyMachine.findEquivalence();
+		final boolean output = sumMealyMachine.findEquivalence();
 		return output;
+	}
+
+	public boolean findEquivalenceMoore() {
+		return true;
 	}
 
 	public void initializeMealy1(final ArrayList<String> transitionsAndOutputs, final ArrayList<String> inputs,
@@ -49,13 +57,13 @@ public class Program {
 		final ArrayList<MealyState> mealyStates = new ArrayList<>();
 		final HashMap<String, MealyState> stateMap = new HashMap<>();
 		for (final String state : states) {
-			final MealyState newState = new MealyState(state);
+			final MealyState newState = new MealyState(state, M1_SIGNATURE);
 			stateMap.put(state, newState);
 			mealyStates.add(newState);
 		}
 		final int inputNum = inputs.size();
 		int transitionIndex = 0;
-		final boolean isInitialState = true;
+		boolean isInitialState = true;
 		MealyState initialState = null;
 
 		for (final String state : states) {
@@ -68,6 +76,7 @@ public class Program {
 			if (isInitialState) {
 				initialState = currentState;
 				currentState.setIsInitialState(true);
+				isInitialState = false;
 			}
 		}
 		if (initialState != null) {
@@ -91,13 +100,13 @@ public class Program {
 		final ArrayList<MealyState> mealyStates = new ArrayList<>();
 		final HashMap<String, MealyState> stateMap = new HashMap<>();
 		for (final String state : states) {
-			final MealyState newState = new MealyState(state);
+			final MealyState newState = new MealyState(state, M2_SIGNATURE);
 			stateMap.put(state, newState);
 			mealyStates.add(newState);
 		}
 		final int inputNum = inputs.size();
 		int transitionIndex = 0;
-		final boolean isInitialState = true;
+		boolean isInitialState = true;
 		MealyState initialState = null;
 
 		for (final String state : states) {
@@ -110,6 +119,7 @@ public class Program {
 			if (isInitialState) {
 				initialState = currentState;
 				currentState.setIsInitialState(true);
+				isInitialState = false;
 			}
 		}
 		if (initialState != null) {

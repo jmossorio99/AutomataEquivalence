@@ -47,7 +47,8 @@ public class MainWindowController implements Initializable {
 			final GridPane m1 = (GridPane) ((Button) event.getSource()).getScene().lookup("#M1");
 			final GridPane m2 = (GridPane) ((Button) event.getSource()).getScene().lookup("#M2");
 			final ArrayList<String> inputs = new ArrayList<>();
-			final ArrayList<String> states = new ArrayList<>();
+			final ArrayList<String> statesM1 = new ArrayList<>();
+			final ArrayList<String> statesM2 = new ArrayList<>();
 			final ArrayList<String> m1Transitions = new ArrayList<>();
 			final ArrayList<String> m2Transitions = new ArrayList<>();
 			final ArrayList<String> outputsMooreM1 = new ArrayList<>();
@@ -55,14 +56,12 @@ public class MainWindowController implements Initializable {
 			for (final String element : inputSymbolList) {
 				inputs.add(element);
 			}
-			for (int i = 0; i < rowNum; i++) {
+			for (int i = 0; i < rowNumM1; i++) {
 				for (int j = 0; j < (selectedType.equals(MOORE) ? columnNum + 1 : columnNum); j++) {
 					final TextField tf1 = (TextField) m1.lookup("#" + (i + 1) + "," + (j + 1));
-					final TextField tf2 = (TextField) m2.lookup("#" + (i + 1) + "," + (j + 1));
 					final String tf1Text = tf1.getText();
-					final String tf2Text = tf2.getText();
 					if (selectedType.equals(MOORE)) {
-						if (tf1Text.isEmpty() || tf2Text.isEmpty()) {
+						if (tf1Text.isEmpty()) {
 							final Alert alert = new Alert(AlertType.ERROR);
 							alert.setTitle("Missing fields");
 							alert.setContentText("Please enter all the fields");
@@ -70,8 +69,7 @@ public class MainWindowController implements Initializable {
 							return;
 						}
 					} else {
-						if (tf1Text.isEmpty() || tf2Text.isEmpty() || (tf1Text.split(",").length != 2)
-								|| (tf2Text.split(",").length != 2)) {
+						if (tf1Text.isEmpty() || (tf1Text.split(",").length != 2)) {
 							final Alert alert = new Alert(AlertType.ERROR);
 							alert.setTitle("Missing fields or wrong input for transitions");
 							alert.setContentText("Please enter all the fields with the right input format");
@@ -79,20 +77,61 @@ public class MainWindowController implements Initializable {
 							return;
 						}
 					}
-					if (j == columnNum) {
+					if (j == (columnNum + 1)) {
 						outputsMooreM1.add(tf1Text);
-						outputsMooreM2.add(tf1Text);
+					} else {
+						m1Transitions.add(tf1Text);
 					}
-					m1Transitions.add(tf1Text);
-					m2Transitions.add(tf2Text);
 
 				}
-				states.add("q" + i);
+				statesM1.add("q" + i);
+			}
+			for (int i = 0; i < rowNumM2; i++) {
+				for (int j = 0; j < (selectedType.equals(MOORE) ? columnNum + 1 : columnNum); j++) {
+					final TextField tf2 = (TextField) m2.lookup("#" + (i + 1) + "," + (j + 1));
+					final String tf2Text = tf2.getText();
+					if (selectedType.equals(MOORE)) {
+						if (tf2Text.isEmpty()) {
+							final Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Missing fields");
+							alert.setContentText("Please enter all the fields");
+							alert.show();
+							return;
+						}
+					} else {
+						if (tf2Text.isEmpty() || (tf2Text.split(",").length != 2)) {
+							final Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Missing fields or wrong input for transitions");
+							alert.setContentText("Please enter all the fields with the right input format");
+							alert.show();
+							return;
+						}
+					}
+					if (j == (columnNum + 1)) {
+						outputsMooreM2.add(tf2Text);
+					} else {
+						m2Transitions.add(tf2Text);
+					}
+
+				}
+				statesM2.add("q" + i);
 			}
 			if (!selectedType.equals(MOORE)) {
 				try {
-					program.initializeMealy1(m1Transitions, inputs, states);
-					program.initializeMealy2(m2Transitions, inputs, states);
+					program.initializeMealy1(m1Transitions, inputs, statesM1);
+					program.initializeMealy2(m2Transitions, inputs, statesM2);
+					final boolean areEquivalent = program.findEquivalenceMealy();
+					if (areEquivalent) {
+						final Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Finalizado");
+						alert.setContentText("Las máquinas son equivalentes");
+						alert.show();
+					} else {
+						final Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Finalizado");
+						alert.setContentText("Las máquinas no son equivalentes");
+						alert.show();
+					}
 				} catch (final NoInitialStateException e) {
 					e.printStackTrace();
 					final Alert alert = new Alert(AlertType.ERROR);
@@ -103,8 +142,8 @@ public class MainWindowController implements Initializable {
 				}
 			} else {
 				try {
-					program.initializeMoore1(m1Transitions, inputs, states, outputsMooreM1);
-					program.initializeMoore2(m2Transitions, inputs, states, outputsMooreM2);
+					program.initializeMoore1(m1Transitions, inputs, statesM1, outputsMooreM1);
+					program.initializeMoore2(m2Transitions, inputs, statesM2, outputsMooreM2);
 				} catch (final NoInitialStateException e) {
 					e.printStackTrace();
 					final Alert alert = new Alert(AlertType.ERROR);
@@ -124,7 +163,8 @@ public class MainWindowController implements Initializable {
 	@FXML
 	private TextField numStates;
 	private Program program;
-	private int rowNum;
+	private int rowNumM1;
+	private int rowNumM2;
 	private String selectedType = "";
 
 	private final String[] types = { "Mealy", "Moore" };
@@ -132,7 +172,7 @@ public class MainWindowController implements Initializable {
 	@FXML
 	void buildMachineClicked(final ActionEvent event) {
 
-		if ((inputSymbols.getText().equals("")) || (numStates.getText().equals("")) || (selectedType.equals(""))) {
+		if ((inputSymbols.getText().equals("")) || (numStates.getText().length() < 3) || (selectedType.equals(""))) {
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Missing fields");
 			alert.setContentText("Please enter all the fields");
@@ -150,20 +190,21 @@ public class MainWindowController implements Initializable {
 		gridPane1.setPadding(new Insets(20));
 		gridPane1.setId("M1");
 		columnNum = inputSymbolList.length;
-		rowNum = Integer.parseInt(numStates.getText());
+		rowNumM1 = Integer.parseInt(numStates.getText().split(",")[0]);
+		rowNumM2 = Integer.parseInt(numStates.getText().split(",")[1]);
 		for (int i = 0; i < columnNum; i++) {
 			final Label label = new Label(inputSymbolList[i]);
 			gridPane1.add(label, i + 1, 0);
 			gridPane1.getColumnConstraints().add(new ColumnConstraints(50));
 			GridPane.setHalignment(label, HPos.CENTER);
 		}
-		for (int i = 0; i < rowNum; i++) {
+		for (int i = 0; i < rowNumM1; i++) {
 			final Label label = new Label("q" + i);
 			gridPane1.add(label, 0, i + 1);
 			gridPane1.getRowConstraints().add(new RowConstraints(50));
 			GridPane.setHalignment(label, HPos.CENTER);
 		}
-		for (int i = 0; i < rowNum; i++) {
+		for (int i = 0; i < rowNumM1; i++) {
 			for (int j = 0; j < (selectedType.equals(MOORE) ? columnNum + 1 : columnNum); j++) {
 				final TextField textField = new TextField();
 				textField.setMaxWidth(35);
@@ -182,13 +223,13 @@ public class MainWindowController implements Initializable {
 			gridPane2.getColumnConstraints().add(new ColumnConstraints(50));
 			GridPane.setHalignment(label, HPos.CENTER);
 		}
-		for (int i = 0; i < rowNum; i++) {
+		for (int i = 0; i < rowNumM2; i++) {
 			final Label label = new Label("q" + i);
 			gridPane2.add(label, 0, i + 1);
 			gridPane2.getRowConstraints().add(new RowConstraints(50));
 			GridPane.setHalignment(label, HPos.CENTER);
 		}
-		for (int i = 0; i < rowNum; i++) {
+		for (int i = 0; i < rowNumM2; i++) {
 			for (int j = 0; j < (selectedType.equals(MOORE) ? columnNum + 1 : columnNum); j++) {
 				final TextField textField = new TextField();
 				textField.setMaxWidth(35);
