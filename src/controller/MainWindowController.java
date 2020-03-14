@@ -77,7 +77,7 @@ public class MainWindowController implements Initializable {
 							return;
 						}
 					}
-					if (j == (columnNum + 1)) {
+					if (j == columnNum) {
 						outputsMooreM1.add(tf1Text);
 					} else {
 						m1Transitions.add(tf1Text);
@@ -107,7 +107,7 @@ public class MainWindowController implements Initializable {
 							return;
 						}
 					}
-					if (j == (columnNum + 1)) {
+					if (j == columnNum) {
 						outputsMooreM2.add(tf2Text);
 					} else {
 						m2Transitions.add(tf2Text);
@@ -124,12 +124,12 @@ public class MainWindowController implements Initializable {
 					if (areEquivalent) {
 						final Alert alert = new Alert(AlertType.INFORMATION);
 						alert.setTitle("Finalizado");
-						alert.setContentText("Las máquinas son equivalentes");
+						alert.setContentText("Las máquinas de Mealy son equivalentes");
 						alert.show();
 					} else {
 						final Alert alert = new Alert(AlertType.INFORMATION);
 						alert.setTitle("Finalizado");
-						alert.setContentText("Las máquinas no son equivalentes");
+						alert.setContentText("Las máquinas de Mealy no son equivalentes");
 						alert.show();
 					}
 				} catch (final NoInitialStateException e) {
@@ -144,6 +144,18 @@ public class MainWindowController implements Initializable {
 				try {
 					program.initializeMoore1(m1Transitions, inputs, statesM1, outputsMooreM1);
 					program.initializeMoore2(m2Transitions, inputs, statesM2, outputsMooreM2);
+					final boolean areEquivalent = program.findEquivalenceMoore();
+					if (areEquivalent) {
+						final Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Finalizado");
+						alert.setContentText("Las máquinas de Moore son equivalentes");
+						alert.show();
+					} else {
+						final Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Finalizado");
+						alert.setContentText("Las máquinas de Moore no son equivalentes");
+						alert.show();
+					}
 				} catch (final NoInitialStateException e) {
 					e.printStackTrace();
 					final Alert alert = new Alert(AlertType.ERROR);

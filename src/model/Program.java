@@ -12,7 +12,10 @@ public class Program {
 	public final static String M2_SIGNATURE = "M2";
 	private MealyMachine mealyMachine1;
 	private MealyMachine mealyMachine2;
+	private MooreMachine mooreMachine1;
+	private MooreMachine mooreMachine2;
 	private SumMealyMachine sumMealyMachine;
+	private SumMooreMachine sumMooreMachine;
 	private String type;
 
 	public Program(final boolean isMealy) {
@@ -34,6 +37,16 @@ public class Program {
 
 	}
 
+	private void calculateSumMooreMachine() {
+		mooreMachine1.deleteUnreachableStates();
+		mooreMachine2.deleteUnreachableStates();
+		final ArrayList<MooreState> sumStates = mooreMachine1.getStates();
+		final MooreState initialM1 = mooreMachine1.getInitialState();
+		final MooreState initialM2 = mooreMachine2.getInitialState();
+		sumStates.addAll(mooreMachine2.getStates());
+		sumMooreMachine = new SumMooreMachine(sumStates, null, mooreMachine1.getInputs(), initialM1, initialM2);
+	}
+
 	public boolean findEquivalenceMealy() {
 		calculateSumMealyMachine();
 		final boolean output = sumMealyMachine.findEquivalence();
@@ -41,7 +54,9 @@ public class Program {
 	}
 
 	public boolean findEquivalenceMoore() {
-		return true;
+		calculateSumMooreMachine();
+		final boolean output = sumMooreMachine.findEquivalence();
+		return output;
 	}
 
 	public void initializeMealy1(final ArrayList<String> transitionsAndOutputs, final ArrayList<String> inputs,
@@ -133,10 +148,78 @@ public class Program {
 	public void initializeMoore1(final ArrayList<String> transitions, final ArrayList<String> inputs,
 			final ArrayList<String> states, final ArrayList<String> outputs) throws NoInitialStateException {
 
+		final ArrayList<MooreState> mooreStates = new ArrayList<>();
+		final HashMap<String, MooreState> stateMap = new HashMap<>();
+		for (final String state : states) {
+			final MooreState newState = new MooreState(state, M1_SIGNATURE);
+			stateMap.put(state, newState);
+			mooreStates.add(newState);
+		}
+
+		final int inputNum = inputs.size();
+		int transitionIndex = 0;
+		int stateIndex = 0;
+		boolean isInitialState = true;
+		MooreState initialState = null;
+
+		for (final String state : states) {
+			final MooreState currentState = stateMap.get(state);
+			for (int j = 0; j < inputNum; j++) {
+				currentState.addTransition(stateMap.get(transitions.get(transitionIndex)));
+				transitionIndex++;
+			}
+			if (isInitialState) {
+				initialState = currentState;
+				currentState.setIsInitialState(true);
+				isInitialState = false;
+			}
+			currentState.setOutput(outputs.get(stateIndex));
+			stateIndex++;
+		}
+		if (initialState != null) {
+			mooreMachine1 = new MooreMachine(mooreStates, initialState, inputs);
+		} else {
+			throw new NoInitialStateException("Exception: No initial state");
+		}
+
 	}
 
 	public void initializeMoore2(final ArrayList<String> transitions, final ArrayList<String> inputs,
 			final ArrayList<String> states, final ArrayList<String> outputs) throws NoInitialStateException {
+
+		final ArrayList<MooreState> mooreStates = new ArrayList<>();
+		final HashMap<String, MooreState> stateMap = new HashMap<>();
+		for (final String state : states) {
+			final MooreState newState = new MooreState(state, M2_SIGNATURE);
+			stateMap.put(state, newState);
+			mooreStates.add(newState);
+		}
+
+		final int inputNum = inputs.size();
+		int transitionIndex = 0;
+		int stateIndex = 0;
+		boolean isInitialState = true;
+		MooreState initialState = null;
+
+		for (final String state : states) {
+			final MooreState currentState = stateMap.get(state);
+			for (int j = 0; j < inputNum; j++) {
+				currentState.addTransition(stateMap.get(transitions.get(transitionIndex)));
+				transitionIndex++;
+			}
+			if (isInitialState) {
+				initialState = currentState;
+				currentState.setIsInitialState(true);
+				isInitialState = false;
+			}
+			currentState.setOutput(outputs.get(stateIndex));
+			stateIndex++;
+		}
+		if (initialState != null) {
+			mooreMachine2 = new MooreMachine(mooreStates, initialState, inputs);
+		} else {
+			throw new NoInitialStateException("Exception: No initial state");
+		}
 
 	}
 
