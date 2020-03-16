@@ -2,11 +2,25 @@ package model;
 
 import java.util.ArrayList;
 
+/**
+ * This class is the direct sum of the two Moore Machines.
+ *
+ */
 public class SumMooreMachine extends MooreMachine {
 
 	private final MooreState initialM1;
 	private final MooreState initialM2;
 
+	/**
+	 * constructor of the class
+	 *
+	 * @param states:       an ArrayList of states, which are the states of this
+	 *                      machine.
+	 * @param initialState: the initial state of the machine
+	 * @param inputs:       the list of inputs that the machine will take
+	 * @param initialM1:    the initial state of M1
+	 * @param initialM2:    the initial state of M2
+	 */
 	public SumMooreMachine(final ArrayList<MooreState> states, final MooreState initialState,
 			final ArrayList<String> inputs, final MooreState initialM1, final MooreState initialM2) {
 		super(states, initialState, inputs);
@@ -19,6 +33,13 @@ public class SumMooreMachine extends MooreMachine {
 		}
 	}
 
+	/**
+	 * Check whether two given partitions are equivalent
+	 *
+	 * @param p1:         first partition
+	 * @param partitionK: second partition
+	 * @return a boolean indicating if they are the same or not; TRUE or FALSE
+	 */
 	private boolean checkPartitionsEquivalence(final ArrayList<ArrayList<MooreState>> p1,
 			final ArrayList<ArrayList<MooreState>> partitionK) {
 
@@ -34,6 +55,15 @@ public class SumMooreMachine extends MooreMachine {
 		return false;
 	}
 
+	/**
+	 * This method evaluates the last partition to check if it fulfills all the
+	 * requirements that indicate that indeed the machines are equivalent
+	 *
+	 * @param pf: the partition to evaluate
+	 * @return a boolean indicating whether the partition fulfills all requirements:
+	 *         every equivalence class has a state from each machine and the initial
+	 *         states of each machine are in the same equivalence class.
+	 */
 	public boolean evaluateFinalPartition(final ArrayList<ArrayList<MooreState>> pf) {
 		boolean initialsOk = false;
 		boolean fromBothMachines = true;
@@ -64,12 +94,24 @@ public class SumMooreMachine extends MooreMachine {
 		return initialsOk && fromBothMachines;
 	}
 
+	/**
+	 * This method is the trigger for the whole process of determining if the
+	 * machines are equivalent
+	 *
+	 * @return a boolean indicating if the machines that make this direct sum are
+	 *         equivalent or not
+	 */
 	public boolean findEquivalence() {
 		final ArrayList<ArrayList<MooreState>> p1 = findP1();
 		final ArrayList<ArrayList<MooreState>> pf = findPf(p1);
 		return evaluateFinalPartition(pf);
 	}
 
+	/**
+	 * finds the first partition of the states of the machine
+	 *
+	 * @return the first partition
+	 */
 	public ArrayList<ArrayList<MooreState>> findP1() {
 		final ArrayList<ArrayList<MooreState>> p1 = new ArrayList<>();
 		final ArrayList<String> outs = new ArrayList<>();
@@ -105,6 +147,12 @@ public class SumMooreMachine extends MooreMachine {
 		return p1;
 	}
 
+	/**
+	 * finds the last partition, recursively
+	 *
+	 * @param p1: the first partition of the states of the machine.
+	 * @return the last partition.
+	 */
 	private ArrayList<ArrayList<MooreState>> findPf(final ArrayList<ArrayList<MooreState>> p1) {
 
 		final ArrayList<ArrayList<MooreState>> partitionK = new ArrayList<>();
@@ -152,6 +200,15 @@ public class SumMooreMachine extends MooreMachine {
 
 	}
 
+	/**
+	 * This method evaluates whether two states in an equivalence class have their
+	 * successors in the same equivalence class of the previous partition
+	 *
+	 * @param partition: the partition in which the two states are
+	 * @param state1:    the first state
+	 * @param state2:    the second state
+	 * @return a boolean indicating whether they fulfill the conditions or not
+	 */
 	private boolean statesAreEquivalent(final ArrayList<ArrayList<MooreState>> partition, final MooreState state1,
 			final MooreState state2) {
 

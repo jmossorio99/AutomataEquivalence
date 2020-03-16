@@ -25,6 +25,15 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import model.Program;
 
+/**
+ * This is the WindowController for the main window, which is the window that
+ * pops up when you run the program. It handles all the interface stuff and
+ * creates the Program object, which is the one that will carry on with all the
+ * logic operations. This class also sends all the data to Program
+ *
+ * @author joseo
+ *
+ */
 public class MainWindowController implements Initializable {
 
 	public final static String MEALY = "Mealy";

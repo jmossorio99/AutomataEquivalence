@@ -8,6 +8,14 @@ public class MealyMachine {
 	protected final ArrayList<String> inputs;
 	protected ArrayList<MealyState> states;
 
+	/**
+	 * constructor of the class
+	 *
+	 * @param states:       an ArrayList of states, which are the states of this
+	 *                      machine.
+	 * @param initialState: the initial state of the machine
+	 * @param inputs:       the list of inputs that the machine will take
+	 */
 	public MealyMachine(final ArrayList<MealyState> states, final MealyState initialState,
 			final ArrayList<String> inputs) {
 		this.initialState = initialState;
@@ -15,6 +23,9 @@ public class MealyMachine {
 		this.inputs = inputs;
 	}
 
+	/**
+	 * This method deletes all the unreachable states of this machine
+	 */
 	public void deleteUnreachableStates() {
 		if (initialState == null) {
 			return;
@@ -44,18 +55,38 @@ public class MealyMachine {
 
 	}
 
+	/**
+	 * @return returns the initial state of the machine
+	 */
 	public MealyState getInitialState() {
 		return initialState;
 	}
 
+	/**
+	 * returns a specific input given an index
+	 *
+	 * @param index: the index of the input
+	 * @return the string containing the input value
+	 */
 	public String getInput(final int index) {
 		return inputs.get(index);
 	}
 
+	/**
+	 *
+	 * @return the complete list of inputs of this machine
+	 */
 	public ArrayList<String> getInputs() {
 		return inputs;
 	}
 
+	/**
+	 * Returns a state given its name
+	 *
+	 * @param stateName: the name of the state to return
+	 * @return the state that matches the name. It will return null if no state
+	 *         matches the given name.
+	 */
 	protected MealyState getState(final String stateName) {
 		for (final MealyState state : states) {
 			if (state.getName().equals(stateName)) {
@@ -65,6 +96,12 @@ public class MealyMachine {
 		return null;
 	}
 
+	/**
+	 * Returns a string containing the outputs of a specific state concatenated.
+	 *
+	 * @param q
+	 * @return
+	 */
 	public String getStateOutputs(final MealyState q) {
 		String outputs = "";
 		for (final String element : q.getOutputs()) {
@@ -73,6 +110,10 @@ public class MealyMachine {
 		return outputs;
 	}
 
+	/**
+	 *
+	 * @return the complete list of states
+	 */
 	public ArrayList<MealyState> getStates() {
 		return states;
 	}

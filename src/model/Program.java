@@ -18,6 +18,12 @@ public class Program {
 	private SumMooreMachine sumMooreMachine;
 	private String type;
 
+	/**
+	 * Program Class constructor
+	 *
+	 * @param isMealy: boolean indicating whether the program will be run with Mealy
+	 *                 or Moore machines
+	 */
 	public Program(final boolean isMealy) {
 		if (isMealy) {
 			type = MainWindowController.MEALY;
@@ -26,6 +32,9 @@ public class Program {
 		}
 	}
 
+	/**
+	 * This method calculates the direct sum of the two Mealy Machines
+	 */
 	private void calculateSumMealyMachine() {
 		mealyMachine1.deleteUnreachableStates();
 		mealyMachine2.deleteUnreachableStates();
@@ -37,6 +46,9 @@ public class Program {
 
 	}
 
+	/**
+	 * This method calculates the direct sum of the two Moore Machines
+	 */
 	private void calculateSumMooreMachine() {
 		mooreMachine1.deleteUnreachableStates();
 		mooreMachine2.deleteUnreachableStates();
@@ -47,18 +59,38 @@ public class Program {
 		sumMooreMachine = new SumMooreMachine(sumStates, null, mooreMachine1.getInputs(), initialM1, initialM2);
 	}
 
+	/**
+	 * This method starts the process of finding whether the machines are equivalent
+	 *
+	 * @return a boolean indicating whether the machines are equivalent
+	 */
 	public boolean findEquivalenceMealy() {
 		calculateSumMealyMachine();
 		final boolean output = sumMealyMachine.findEquivalence();
 		return output;
 	}
 
+	/**
+	 * This method starts the process of finding whether the machines are equivalent
+	 *
+	 * @return a boolean indicating whether the machines are equivalent
+	 */
 	public boolean findEquivalenceMoore() {
 		calculateSumMooreMachine();
 		final boolean output = sumMooreMachine.findEquivalence();
 		return output;
 	}
 
+	/**
+	 * This method initializes the first Mealy Machine
+	 *
+	 * @param transitionsAndOutputs: ArrayList of strings containing in each entry
+	 *                               the state to which the current state goes to
+	 *                               with a certain input comma the output it gives.
+	 * @param inputs:                the list of inputs the machine will take.
+	 * @param states:                the names of the states of the machine.
+	 * @throws NoInitialStateException: in case the initial state is null.
+	 */
 	public void initializeMealy1(final ArrayList<String> transitionsAndOutputs, final ArrayList<String> inputs,
 			final ArrayList<String> states) throws NoInitialStateException {
 
@@ -102,6 +134,16 @@ public class Program {
 
 	}
 
+	/**
+	 * This method initializes the second Mealy Machine
+	 *
+	 * @param transitionsAndOutputs: ArrayList of strings containing in each entry
+	 *                               the state to which the current state goes to
+	 *                               with a certain input comma the output it gives.
+	 * @param inputs:                the list of inputs the machine will take.
+	 * @param states:                the names of the states of the machine.
+	 * @throws NoInitialStateException: in case the initial state is null.
+	 */
 	public void initializeMealy2(final ArrayList<String> transitionsAndOutputs, final ArrayList<String> inputs,
 			final ArrayList<String> states) throws NoInitialStateException {
 
@@ -145,6 +187,16 @@ public class Program {
 
 	}
 
+	/**
+	 * This method initializes the first Moore Machine
+	 *
+	 * @param transitions: ArrayList of strings containing in each entry the state
+	 *                     to which the current state goes to with a certain input.
+	 * @param inputs:      the list of inputs the machine will take.
+	 * @param states:      the names of the states of the machine.
+	 * @param outputs:     this is the list of outputs the states will give
+	 * @throws NoInitialStateException: in case the initial state is null.
+	 */
 	public void initializeMoore1(final ArrayList<String> transitions, final ArrayList<String> inputs,
 			final ArrayList<String> states, final ArrayList<String> outputs) throws NoInitialStateException {
 
@@ -184,6 +236,16 @@ public class Program {
 
 	}
 
+	/**
+	 * This method initializes the second Moore Machine
+	 *
+	 * @param transitions: ArrayList of strings containing in each entry the state
+	 *                     to which the current state goes to with a certain input.
+	 * @param inputs:      the list of inputs the machine will take.
+	 * @param states:      the names of the states of the machine.
+	 * @param outputs:     this is the list of outputs the states will give
+	 * @throws NoInitialStateException: in case the initial state is null.
+	 */
 	public void initializeMoore2(final ArrayList<String> transitions, final ArrayList<String> inputs,
 			final ArrayList<String> states, final ArrayList<String> outputs) throws NoInitialStateException {
 
